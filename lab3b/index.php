@@ -51,14 +51,14 @@
         </div>
 
         <div>
-            <button type="submit">
+            <button>
                 Upload
             </button>
         </div>
     </form>
-    </div>
+  </div>
   <div class="col">
-  <img class="p-logo-section__logo" src="https://www.auf.edu.ph/home/images/mascot/CCS.png" alt="College of Computing Studies">
+    <img class="p-logo-section__logo" src="https://www.auf.edu.ph/home/images/mascot/CCS.png" alt="College of Computing Studies">
   </div>
 </div>
 

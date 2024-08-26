@@ -1,58 +1,46 @@
 <?php
 
-// Define the upload directory
 $upload_directory = getcwd() . '/uploads/';
-$relative_path = '/uploads/';
 
-// Ensure upload directory exists
-if (!is_dir($upload_directory)) {
+// Create uploads directory if it doesn't exist
+if (!file_exists($upload_directory)) {
     mkdir($upload_directory, 0777, true);
 }
 
-// Function to handle file uploads
-function handle_file_upload($file_key, $allowed_types, $upload_directory) {
-    if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-        $file_name = basename($_FILES[$file_key]['name']);
-        $file_path = $upload_directory . $file_name;
-        $temporary_file = $_FILES[$file_key]['tmp_name'];
-        $file_type = mime_content_type($temporary_file);
+function handle_file_upload($file, $upload_directory, $type) {
+    $uploaded_file = $upload_directory . basename($file['name']);
+    $temporary_file = $file['tmp_name'];
 
-        // Debugging information
-        echo "File Type: $file_type\n";
-        echo "Allowed Types: " . implode(', ', $allowed_types) . "\n";
-
-        if (in_array($file_type, $allowed_types)) {
-            if (move_uploaded_file($temporary_file, $file_path)) {
-                return $file_path;
-            } else {
-                return 'Failed to move uploaded file';
-            }
-        } else {
-            return 'Invalid file type';
+    if (move_uploaded_file($temporary_file, $uploaded_file)) {
+        if ($type === 'text') {
+            $content = file_get_contents($uploaded_file);
+            echo "<h3>Uploaded Text File Content:</h3>";
+            echo "<textarea cols='70' rows='30'>{$content}</textarea>";
+        } elseif ($type === 'pdf') {
+            echo "<h3>Uploaded PDF File:</h3>";
+            echo "<embed src='{$uploaded_file}' type='application/pdf' width='600' height='400' />";
+        } elseif ($type === 'audio') {
+            echo "<h3>Uploaded Audio File:</h3>";
+            echo "<audio controls><source src='{$uploaded_file}' type='audio/mpeg'>Your browser does not support the audio element.</audio>";
+        } elseif ($type === 'video') {
+            echo "<h3>Uploaded Video File:</h3>";
+            echo "<video width='600' controls><source src='{$uploaded_file}' type='video/mp4'>Your browser does not support the video tag.</video>";
         }
     } else {
-        return 'No file uploaded or upload error';
+        echo "Failed to upload {$type} file.";
     }
 }
 
-// Handle each file type
-$text_file_message = handle_file_upload('text_file', ['text/plain'], $upload_directory);
-$pdf_file_message = handle_file_upload('pdf_file', ['application/pdf'], $upload_directory);
-$audio_file_message = handle_file_upload('audio_file', ['audio/mpeg'], $upload_directory);
-$video_file_message = handle_file_upload('video_file', ['video/mp4'], $upload_directory);
-
-// Display file content for text files
-if (is_string($text_file_message) && strpos($text_file_message, 'Failed') === false && strpos($text_file_message, 'Invalid') === false) {
-    $text_file_content = file_get_contents($text_file_message);
-    ?>
-    <textarea cols="70" rows="30"><?php echo htmlspecialchars($text_file_content); ?></textarea>
-    <?php
-} else {
-    echo $text_file_message;
+// Handle Text File
+if (!empty($_FILES['text_file']['name'])) {
+    handle_file_upload($_FILES['text_file'], $upload_directory, 'text');
 }
 
-// Display debug information
-echo '<pre>';
-var_dump($_FILES);
-echo '</pre>';
-exit;
+// Handle PDF File
+if (!empty($_FILES['pdf_file']['name'])) {
+    handle_file_upload($_FILES['pdf_file'], $upload_directory, 'pdf');
+}
+
+// Handle Audio File
+if (!empty($_FILES['audio_file']['name'])) {
+    handle_file_upload($_
