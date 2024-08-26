@@ -43,4 +43,12 @@ if (!empty($_FILES['pdf_file']['name'])) {
 
 // Handle Audio File
 if (!empty($_FILES['audio_file']['name'])) {
-    handle_file_upload($_
+    handle_file_upload($_FILES['audio_file'], $upload_directory, 'audio');
+}
+
+// Handle Video File
+if (!empty($_FILES['video_file']['name'])) {
+    handle_file_upload($_FILES['video_file'], $upload_directory, 'video');
+}
+
+?>
